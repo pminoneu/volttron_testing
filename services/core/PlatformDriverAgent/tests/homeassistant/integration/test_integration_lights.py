@@ -1,7 +1,43 @@
 import pytest
 import requests
 import subprocess
+import gevent
+from gevent.event import Event
+from volttron.platform.vip.agent import Agent
+import os
+from volttron.platform.keystore import KeyStore
 
+# Creates a helper function for RCP 
+#Address to connect to Volttron's VIP socket
+VIP_ADDRESS = "ipc:///home/paula-minozzo/.volttron/run/vip.socket"
+def rpc_call(peer, method, *args, timeout=20):
+    ks = KeyStore("/home/paula-minozzo/.volttron/keystores/test.caller/keystore.json")
+
+    agent = Agent(
+        address=VIP_ADDRESS,
+        identity="test.caller",
+        enable_store=False,
+        publickey=ks.public,
+        secretkey=ks.secret
+    )
+
+    started = Event()
+    agent.core.onstart.connect(lambda *a, **kw: started.set())
+    gevent.spawn(agent.core.run)
+
+    if not started.wait(timeout=20):
+        agent.core.stop()
+        raise RuntimeError("Agent failed to start")
+
+    gevent.sleep(2)
+
+    try:
+        peers = agent.vip.peerlist().get(timeout=10)
+        print("Peers:", peers)
+        return agent.vip.rpc.call(peer, method, *args).get(timeout=timeout)
+    finally:
+        agent.core.stop()
+        
 def check_volttron_is_scraping():
     result = subprocess.run([
         'ssh', '-i', '/Users/paulaminozzo/.ssh/volttron_vm', '-p', '2222', 'paula-minozzo@localhost',
@@ -23,8 +59,12 @@ def get_status_message(code):
     return STATUS_CODES.get(code, "Unknown status code")
 
 HA_URL = "http://localhost:8123"
-TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI2NzVhNTZkYWIwODQ0MzM2YmY4MWZlNmJhMjAxNjhiNSIsImlhdCI6MTc3NDgyNTYyOCwiZXhwIjoyMDkwMTg1NjI4fQ._bPz-KYWEGLVaONTMtO9z-7U_xbClqxNF2ZaiEuyj0I"
-HEADERS = {"Authorization": "Bearer " + TOKEN}
+TOKEN = os.environ.get("HA_TOKEN")
+HEADERS = {"Authorization": "Bearer " + TOKEN} if TOKEN else None
+
+def require_ha_token():
+    if HEADERS is None:
+        pytest.skip("HA_TOKEN not set; skipping direct Home Assistant API test")
 
 #Makes a GET request to that URL using requests.get() with our HEADERS
 #Checks that the response status code is 200 (meaning success)
@@ -61,3 +101,9 @@ def test_set_light_off():
     print(f"\nVOLTTRON scraping: {check_volttron_is_scraping()}")
     assert check_volttron_is_scraping(), "VOLTTRON is not scraping Home Assistant!"
     assert response.status_code == 200
+
+def test_volttron_get_light_state():
+    result = rpc_call("platform.driver", "get_point", "home/homeassistant", "test_light")
+    print("\n=== TEST: VOLTTRON get light state ===")
+    print("Result:", result)
+    assert result in [0, 1, "on", "off"]
