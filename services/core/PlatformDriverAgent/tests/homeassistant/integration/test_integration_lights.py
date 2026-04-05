@@ -2,42 +2,28 @@ import pytest
 import requests
 import subprocess
 import gevent
-from gevent.event import Event
-from volttron.platform.vip.agent import Agent
 import os
-from volttron.platform.keystore import KeyStore
+from volttron.platform import get_services_core
+from volttron.platform.agent.known_identities import CONFIGURATION_STORE, PLATFORM_DRIVER
 
 # Creates a helper function for RCP 
 #Address to connect to Volttron's VIP socket
 VIP_ADDRESS = "ipc:///home/paula-minozzo/.volttron/run/vip.socket"
-def rpc_call(peer, method, *args, timeout=20):
-    ks = KeyStore("/home/paula-minozzo/.volttron/keystores/test.caller/keystore.json")
 
-    agent = Agent(
-        address=VIP_ADDRESS,
-        identity="test.caller",
-        enable_store=False,
-        publickey=ks.public,
-        secretkey=ks.secret
-    )
+@pytest.fixture(scope='module')
+def agent_fixture(request, volttron_instance):
+    agent = volttron_instance.build_agent(identity="test_homeassistant_agent")
 
-    started = Event()
-    agent.core.onstart.connect(lambda *a, **kw: started.set())
-    gevent.spawn(agent.core.run)
+    capabilities = {'edit_config_store': {'identity': PLATFORM_DRIVER}}
+    volttron_instance.add_capabilities(agent.core.publickey, capabilities)
 
-    if not started.wait(timeout=20):
+    def stop():
         agent.core.stop()
-        raise RuntimeError("Agent failed to start")
 
-    gevent.sleep(2)
+    request.addfinalizer(stop)
+    return agent
 
-    try:
-        peers = agent.vip.peerlist().get(timeout=10)
-        print("Peers:", peers)
-        return agent.vip.rpc.call(peer, method, *args).get(timeout=timeout)
-    finally:
-        agent.core.stop()
-        
+
 def check_volttron_is_scraping():
     result = subprocess.run([
         'ssh', '-i', '/Users/paulaminozzo/.ssh/volttron_vm', '-p', '2222', 'paula-minozzo@localhost',
@@ -102,8 +88,14 @@ def test_set_light_off():
     assert check_volttron_is_scraping(), "VOLTTRON is not scraping Home Assistant!"
     assert response.status_code == 200
 
-def test_volttron_get_light_state():
-    result = rpc_call("platform.driver", "get_point", "home/homeassistant", "test_light")
+def test_volttron_get_light_state(agent_fixture):
+    result = agent_fixture.vip.rpc.call(
+        PLATFORM_DRIVER,
+        "get_point",
+        "home/homeassistant",
+        "test_light"
+    ).get(timeout=20)
+
     print("\n=== TEST: VOLTTRON get light state ===")
     print("Result:", result)
     assert result in [0, 1, "on", "off"]
