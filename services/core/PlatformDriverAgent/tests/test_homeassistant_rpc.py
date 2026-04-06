@@ -3,29 +3,15 @@ import pytest
 import gevent
 import json
 import os
-from gevent import pywsgi
 
 from volttron.platform import get_services_core
-from volttrontesting.utils.utils import get_rand_http_address
 from volttron.platform.agent.known_identities import CONFIGURATION_STORE, PLATFORM_DRIVER
 
-# Check if using real Home Assistant or mock
-USE_REAL_HA = os.getenv("HA_TOKEN") is not None
+# Real Home Assistant connection
+ip = os.getenv("HA_IP", "localhost")
+port = os.getenv("HA_PORT", "8123")
+HA_TOKEN = os.getenv("HA_TOKEN")
 HA_ENTITY_ID = os.getenv("HA_ENTITY_ID", "input_boolean.test_light")
-
-if USE_REAL_HA:
-    # Real Home Assistant connection
-    ip = os.getenv("HA_IP", "localhost")
-    port = os.getenv("HA_PORT", "8123")
-    HA_TOKEN = os.getenv("HA_TOKEN")
-    mock_server = None
-else:
-    # Mock Home Assistant server
-    server_addr = get_rand_http_address()
-    no_scheme = server_addr[7:]
-    ip, port = no_scheme.split(':')
-    HA_TOKEN = "test_token_12345"
-    mock_server = None
 
 # Device configuration for Home Assistant driver
 driver_config_dict_string = """{
@@ -55,26 +41,6 @@ registry_config_string = """[
     }
 ]""" % HA_ENTITY_ID
 
-
-def handle_ha_request(env, start_response):
-    """Mock Home Assistant API request handler"""
-    path = env['PATH_INFO']
-    method = env['REQUEST_METHOD']
-    
-    # Check authorization header
-    auth = env.get('HTTP_AUTHORIZATION', '')
-    if f"Bearer {HA_TOKEN}" not in auth:
-        start_response('401 Unauthorized', [('Content-Type', 'application/json')])
-        return [json.dumps({"error": "Unauthorized"}).encode()]
-    
-    # Handle any entity state request
-    if path.startswith('/api/states/') and method == 'GET':
-        start_response('200 OK', [('Content-Type', 'application/json')])
-        return [json.dumps({"state": "on"}).encode()]
-    
-    # Default: 404
-    start_response('404 Not Found', [('Content-Type', 'application/json')])
-    return [json.dumps({"error": "Not found"}).encode()]
 
 
 @pytest.fixture(scope='module')
@@ -125,22 +91,13 @@ def agent(request, volttron_instance):
     
     gevent.sleep(2)  # Wait for agent to start
     
-    # Start mock Home Assistant server (only if not using real HA)
-    server = None
-    if not USE_REAL_HA:
-        server = pywsgi.WSGIServer((ip, int(port)), handle_ha_request)
-        server.start()
-        print(f"Mock Home Assistant server started at http://{ip}:{port}")
-    else:
-        print(f"Using real Home Assistant at http://{ip}:{port}")
+    print(f"Using real Home Assistant at http://{ip}:{port}")
     
     def stop():
         """Cleanup"""
         print("Stopping test fixtures...")
         volttron_instance.stop_agent(platform_uuid)
         agent.core.stop()
-        if server:
-            server.stop()
     
     request.addfinalizer(stop)
     return agent
@@ -152,14 +109,11 @@ def test_homeassistant_get_point_rpc(agent):
     # Give the driver time to initialize and scrape
     gevent.sleep(5)
     
-    # Print which mode we're in
+    # Print test mode info
     print("\n" + "="*70)
-    if USE_REAL_HA:
-        print("TEST MODE: Real Home Assistant")
-        print(f"  HA Address: http://{ip}:{port}")
-        print(f"  Entity ID: {HA_ENTITY_ID}")
-    else:
-        print("TEST MODE: Mock Home Assistant (for CI/testing)")
+    print("TEST MODE: Real Home Assistant")
+    print(f"  HA Address: http://{ip}:{port}")
+    print(f"  Entity ID: {HA_ENTITY_ID}")
     print("="*70)
     
     # Check that PlatformDriverAgent is running
