@@ -1,0 +1,12 @@
+[
+  {
+    "Entity ID": "input_boolean.test_light",
+    "Entity Point": "state",
+    "Volttron Point Name": "test_light",
+    "Units": "On / Off",
+    "Writable": false,
+    "Starting Value": "on",
+    "Type": "string",
+    "Notes": "test light entity for demo"
+  }
+]

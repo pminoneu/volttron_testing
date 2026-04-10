@@ -1,0 +1,45 @@
+2026-04-09 22:43:46,834 () volttron.platform.main [741] DEBUG: opts.instancename pminozzo
+2026-04-09 22:43:46,836 () volttron.platform.main [804] DEBUG: open file resource limit 1048576 to 1048576
+2026-04-09 22:43:46,836 () volttron.platform.agent.utils [257] DEBUG: value from env False
+2026-04-09 22:43:46,837 () volttron.platform.main [818] WARNING: insecure access control on directory: /home/paula-minozzo/.volttron_homeassistant_demo
+2026-04-09 22:43:46,837 () volttron.platform.main [826] INFO: Loading auth entries from auth.json
+2026-04-09 22:43:46,839 () volttron.platform.main [829] DEBUG: using key-store file /home/paula-minozzo/.volttron_homeassistant_demo/keystore
+2026-04-09 22:43:48,993 () volttron.platform.main [882] DEBUG: protected topics file /home/paula-minozzo/.volttron_homeassistant_demo/protected_topics.json
+2026-04-09 22:43:48,997 () volttron.platform.main [885] DEBUG: external_address_file file /home/paula-minozzo/.volttron_homeassistant_demo/external_address.json
+2026-04-09 22:43:48,997 () volttron.platform.main [958] DEBUG: ********************************************************************
+2026-04-09 22:43:48,997 () volttron.platform.main [961] DEBUG: VOLTTRON PLATFORM RUNNING ON zmq MESSAGEBUS
+2026-04-09 22:43:48,997 () volttron.platform.main [963] DEBUG: ********************************************************************
+2026-04-09 22:43:48,998 () root [103] DEBUG: Creating ZMQ Core config.store
+2026-04-09 22:43:50,096 () root [103] DEBUG: Creating ZMQ Core control
+2026-04-09 22:43:50,123 () root [103] DEBUG: Creating ZMQ Core keydiscovery
+2026-04-09 22:43:50,133 () root [103] DEBUG: Creating ZMQ Core platform.health
+2026-04-09 22:43:50,134 () volttron.platform.main [1238] DEBUG: protected topics file /home/paula-minozzo/.volttron_homeassistant_demo/protected_topics.json
+2026-04-09 22:43:50,134 () root [103] DEBUG: Creating ZMQ Core platform.auth
+2026-04-09 22:43:50,146 () volttron.platform.vip.agent.core [702] INFO: Identity: platform.auth connecting to address:inproc://vip
+2026-04-09 22:43:50,169 () volttron.platform.agent.utils [743] DEBUG: Watch file added for filename /home/paula-minozzo/.volttron_homeassistant_demo/auth.json
+2026-04-09 22:43:50,173 () volttron.platform.agent.utils [748] DEBUG: Added file watch for /home/paula-minozzo/.volttron_homeassistant_demo/auth.json
+2026-04-09 22:43:50,174 () volttron.platform.agent.utils [743] DEBUG: Watch file added for filename /home/paula-minozzo/.volttron_homeassistant_demo/protected_topics.json
+2026-04-09 22:43:50,183 () volttron.platform.agent.utils [748] DEBUG: Added file watch for /home/paula-minozzo/.volttron_homeassistant_demo/protected_topics.json
+2026-04-09 22:43:50,185 () volttron.platform.main [1256] DEBUG: MAIN: protected topics content {}
+2026-04-09 22:43:51,198 () volttron.platform.main [1268] DEBUG: external_address_file file /home/paula-minozzo/.volttron_homeassistant_demo/external_address.json
+2026-04-09 22:43:54,257 () volttron.platform.vip.agent.core [702] INFO: Identity: config.store connecting to address:inproc://vip
+2026-04-09 22:43:54,270 () volttron.platform.store [115] INFO: Initializing configuration store service.
+2026-04-09 22:43:54,433 () volttron.platform.main [902] DEBUG: Running zmq router
+2026-04-09 22:43:54,443 () volttron.platform.vip.router [117] DEBUG: ROUTER SENDBUF: -1, -1
+2026-04-09 22:43:54,449 () volttron.platform.main [351] DEBUG: ROUTER SOCK identity: b'deb0d8cd-df85-4adc-8d6f-625d3ca177a4'
+2026-04-09 22:43:54,449 () volttron.platform.main [355] DEBUG: In-process VIP router bound to inproc://vip
+2026-04-09 22:43:54,450 () volttron.platform.main [369] DEBUG: Local VIP router bound to ipc://@/home/paula-minozzo/.volttron_homeassistant_demo/run/vip.socket?domain=vip&server=CURVE&secretkey=XXXXX#deb0d8cd-df85-4adc-8d6f-625d3ca177a4
+2026-04-09 22:43:54,451 () volttron.platform.vip.pubsubservice [586] DEBUG: protected-topics loaded
+2026-04-09 22:43:54,451 () volttron.platform.main [392] DEBUG: ZMQ version: 4.3.5
+2026-04-09 22:43:54,456 () volttron.platform.vip.agent.core [621] INFO: Connected to platform: router: deb0d8cd-df85-4adc-8d6f-625d3ca177a4 version: 1.0 identity: config.store
+2026-04-09 22:43:54,458 () volttron.platform.vip.agent.core [621] INFO: Connected to platform: router: deb0d8cd-df85-4adc-8d6f-625d3ca177a4 version: 1.0 identity: platform.auth
+2026-04-09 22:43:54,512 () volttron.platform.vip.pubsubservice [586] DEBUG: protected-topics loaded
+2026-04-09 22:43:54,543 () volttron.platform.vip.agent.core [702] INFO: Identity: control connecting to address:inproc://vip
+2026-04-09 22:43:54,553 () volttron.platform.vip.agent.core [702] INFO: Identity: keydiscovery connecting to address:inproc://vip
+2026-04-09 22:43:54,557 () volttron.platform.vip.agent.core [702] INFO: Identity: platform.health connecting to address:inproc://vip
+2026-04-09 22:43:54,560 () volttron.platform.vip.agent.core [621] INFO: Connected to platform: router: deb0d8cd-df85-4adc-8d6f-625d3ca177a4 version: 1.0 identity: control
+2026-04-09 22:43:54,569 () volttron.platform.vip.agent.core [621] INFO: Connected to platform: router: deb0d8cd-df85-4adc-8d6f-625d3ca177a4 version: 1.0 identity: keydiscovery
+2026-04-09 22:43:54,571 () volttron.platform.vip.agent.core [621] INFO: Connected to platform: router: deb0d8cd-df85-4adc-8d6f-625d3ca177a4 version: 1.0 identity: platform.health
+2026-04-09 22:45:20,980 () volttron.platform.auth.auth_protocols.auth_zmq [242] INFO: AUTH: After authenticate user id: 'control.connection', b'deb0d8cd-df85-4adc-8d6f-625d3ca177a4'
+2026-04-09 22:45:20,990 () volttron.platform.auth.auth_protocols.auth_zmq [246] INFO: authentication success: userid=b'deb0d8cd-df85-4adc-8d6f-625d3ca177a4' domain='vip', address='localhost:1000:1000:8284', mechanism='CURVE', credentials=['VgEDCAF6BhWfnVLnQ-mJE7LFH5hJSEJWdFQCEz4Vdws'], user='control.connection'
+2026-04-09 22:45:21,050 () volttron.platform.main [460] DEBUG: ROUTER received agent stop message. dropping peer: control.connection

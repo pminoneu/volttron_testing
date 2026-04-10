@@ -1,0 +1,10 @@
+{
+  "driver_config": {
+    "ip_address": "localhost",
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIwYTJhMzViMjUxYTU0Mjc0YmMzMGQ3MmNkYzk4YjJkYSIsImlhdCI6MTc3NTUyNjcyMSwiZXhwIjoyMDkwODg2NzIxfQ.ADBPgatN1CoP8fEu1S_gj2qspXhEubdOLTpdUag5wQk",
+    "port": 8123
+  },
+  "driver_type": "home_assistant",
+  "registry_config": "config://homeassistant.csv",
+  "interval": 60
+}
