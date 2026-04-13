@@ -96,10 +96,43 @@ class ListenerAgent(Agent):
     @PubSub.subscribe('pubsub', '', all_platforms=True)
     def on_match(self, peer, sender, bus, topic, headers, message):
         """Use match_all to receive all messages and print them out."""
+        message_to_log = pformat(message)
+
+        if topic.endswith("/all") and isinstance(message, list) and len(message) > 0:
+            values = message[0]
+
+            if isinstance(values, dict):
+                friendly_lines = []
+
+                for point_name, value in values.items():
+                    if point_name == "test_light":
+                        if value == 1:
+                            friendly_lines.append("Test Light is ON")
+                        elif value == 0:
+                            friendly_lines.append("Test Light is OFF")
+                        else:
+                            friendly_lines.append(f"Test Light has value {value}")
+
+                    elif point_name == "test_lock":
+                        if value == 1:
+                            friendly_lines.append("Lock is LOCKED")
+                        elif value == 0:
+                            friendly_lines.append("Lock is UNLOCKED")
+                        else:
+                            friendly_lines.append(f"Lock has value {value}")
+
+                    else:
+                        friendly_lines.append(f"{point_name} = {value}")
+
+                if friendly_lines:
+                    message_to_log = " | ".join(friendly_lines)
+
         self._logfn(
             "Peer: {0}, Sender: {1}:, Bus: {2}, Topic: {3}, Headers: {4}, "
-            "Message: \n{5}".format(peer, sender, bus, topic, headers, pformat(message)))
+            "Message: \n{5}".format(peer, sender, bus, topic, headers, message_to_log))
+            ## creates a nicely formatted string representation of the message for logging
 
+         
 
 def main(argv=sys.argv):
     '''Main method called by the eggsecutable.'''

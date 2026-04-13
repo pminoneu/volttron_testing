@@ -8,8 +8,10 @@ from volttron.platform.vip.agent import Agent
 
 DEFAULT_VOLTTRON_HOME = "/home/paula-minozzo/.volttron_homeassistant_demo"
 
+
 class TestAgent(Agent):
     pass
+
 
 def main():
     os.environ.setdefault("VOLTTRON_HOME", DEFAULT_VOLTTRON_HOME)
@@ -28,7 +30,7 @@ def main():
             PLATFORM_DRIVER,
             "get_point",
             "home/homeassistant_light",
-            "test_light"
+            "test_lock",
         ).get(timeout=10)
         print("RPC get_point result:", result)
     except Exception as exc:
@@ -37,6 +39,7 @@ def main():
     finally:
         agent.core.stop()
         task.kill()
+
 
 if __name__ == "__main__":
     main()
